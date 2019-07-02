@@ -1,0 +1,26 @@
+ version: "3.6"
+ services:
+   gitlab:
+     image: gitlab/gitlab-ce:latest
+     restart: always
+     hostname: 'gitlab.example.com'
+     environment:
+       GITLAB_OMNIBUS_CONFIG: |
+         external_url 'https://git.example.com'  ## Change this
+         letsencrypt['enable'] = true
+         letsencrypt['contact_emails'] = ['info@reckonsys.com']
+         letsencrypt['auto_renew'] = true
+         prometheus_monitoring['enable'] = false
+     ports:
+       - "22:22"
+       - "80:80"
+       - "443:443"
+     volumes:
+       - /srv/gitlab/data:/var/opt/gitlab
+       - /srv/gitlab/logs:/var/log/gitlab
+       - /srv/gitlab/config:/etc/gitlab
+   gitlab-runner:
+     image: gitlab/gitlab-runner:alpine
+     deploy:
+       mode: replicated
+       replicas: 2
